@@ -3,7 +3,7 @@ import pandas as pd
 
 
 # Read the log file
-with open("/scratch/gjandebeur/Cglabrata/batch/minimap2_output.txt", "r") as f:
+with open("/pathto/minimap2_output.txt", "r") as f:
     content = f.read()
 
 # Stats we want to collect
@@ -61,7 +61,7 @@ print(all_data)
 # Save to CSV
 df = pd.DataFrame(list(all_data), columns=["sample_id"] + stat_names)
 
-csv_filename = "/scratch/gjandebeur/Cglabrata/reports/minimap2_stats_update.csv"
+csv_filename = "/outputfile/minimap2_stats_update.csv"
 df.to_csv(csv_filename, index=False)
 
 print("Data saved to minimap2_stats.csv")
