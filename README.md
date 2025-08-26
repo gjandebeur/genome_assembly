@@ -194,3 +194,44 @@ done
 
 After obtaining output files with the flagstat data, as well as from the Flye assembly, you can run the code attached to this directory to pull out statistical data and place into a .xlsx file for further analyses. 
 *THESE TWO FILES MENTIONED ABOVE MUST BE RUN AS PYTHON SCRIPTS* 
+
+Now Run BCFtools to mpileup reads
+```
+ref_dir="/pathto/reference"
+bam_dir="/path/to/postfilter/ONT/bam"
+output_dir="/path/to/output/postfilter/bcfpileup/"  
+
+echo "Starting bcf mpileup loop"
+
+for bam_file in "$bam_dir"/*.bam
+do
+    if [ -f "$bam_file" ]; then
+        sample=$(basename "$bam_file" .bam)
+        output_file="$output_dir/${sample}.vcf.gz"
+        
+        # Skip if output file already exists
+        if [ -f "$output_file" ]; then
+            echo "Skipping $sample - output already exists: $output_file"
+            continue
+        fi
+        
+        echo "Processing sample: $sample"
+        echo "BAM file: $bam_file"
+        
+        bcftools mpileup \
+            --max-depth 1000000 \
+            --threads 8 \
+            -O z \
+            -o "$output_file" \
+            -f "$ref_dir/referencefile.fasta" \
+            "$bam_file"
+        
+        echo "Generated: ${sample}.vcf.gz"
+        echo "---------------------------------------------"
+    fi
+done
+echo "bcftools mpileup loop completed."
+```
+
+Using the pileup files, run bcftools call for SNP analysis
+
