@@ -68,3 +68,97 @@ do
     fi
 done
 ```
+in1 and in2 == input files
+out1 and out2 == output files
+unpaired 1/2 == reads that didn't fit both in1 and in2
+failed == couldn't read 
+-q (Phred q score) 
+-l 100 == minimum length of read to be counted
+-n 2 == at MAX 2 N reads (unknown nucleotide) per read without being disgarded
+--cut_front / cut_tail == cut out first nucleotides/adapter 
+-M 30 == cuts above only if phred score > 30.
+-W 1 == reading window of one, reads one nucleotide at a time
+--trim_poly_g / trim_poly_x == trim out polyG/polyX tails that may occur
+--dont_eval_duplication == doesn't look for duplications to save memory (This was already done in fastQC/MultiQC steps)
+
+
+
+### rerun FastQC on the fastp/fastplong files for post-filtered QC. 
+same code as prior just change the input/outputs
+
+### Run MultiQC on both raw and filtered outputs (separate by ONT and Illumina) 
+
+```
+multiqc -n illumina_multiqc -d /example/fastQC/fastp_data/
+multiqc -n nanopore_multiqc -d /example/fastQC/fastplong_data/
+```
+-n == the output files name
+-d == the input directory
+
+
+### The next part branches into two aspects: de novo assembly and reference-based assembly.
+
+## To perform De Novo Assembly of Genome
+use Flye program (install via conda/bioconda)
+
+```
+for file in /example/fastplong/data/*.fastq.gz
+do
+    fname=$(basename "$file")
+    
+    flye --nano-hq "$file" \
+        -g 12.3m \
+        -o "/scratch/gjandebeur/Cglabrata/flye/postfilter/${fname%}_nanopore.fastq" \
+        --threads 8
+done
+```
+Options for FLYE include:
+-g == genome size expected (~12.3m for C. glabrata)
+-o == output file
+--threads (how many CPU you have listed)
+
+### Reference Based Assembly (minimap2) 
+
+First for ONT data 
+```
+#for file in /example/rawdata/*fastq.gz
+#do
+#    if [ -f "$file" ]; then
+#    fname=$(basename "$file" .fastq.gz)
+#    echo "Processing $fname..."
+#    
+#    ./minimap2 -ax map-ont \
+#    "/REFERENCE/FILE.fasta" \
+#    "$file" > /output/ONT/${fname}.sam
+#    fi
+#      echo "minimap2 failed"
+#done
+```
+
+Next minimap2 for Illumina paired reads (different syntax)
+
+```
+#for file1 in "/example/file2/illumina/*_R1_001*.fastq.gz
+#do
+#    if [ -f "$file1" ]; then
+#        base="${file1%_R1_001*.fastq.gz}"
+#        base=$(basename "$base")
+#        file2="/example/file2/illumina/${base}_R2_001*.fastq.gz"
+#        file2=$(ls $file2 2>/dev/null | head -1)
+#        if [ -f "$file2" ]; then
+#            echo "Processing paired files for sample: $base"
+#            echo "R1: $(basename $file1)"
+#            echo "R2: $(basename $file2)"
+#            ./minimap -ax sr \
+#            "/REFERENCE/FILE.fasta" \
+#            "$file1" "$file2" > /output/illumina/${base}.sam
+#            echo "Generated: ${base}.sam"
+#        else
+#            echo "Warning: R2 file not found for $file1"
+#            echo "Expected: $file2"
+#        fi
+#        echo "---------------------------------------------"
+#    fi
+#done
+```
+
