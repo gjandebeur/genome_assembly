@@ -134,6 +134,8 @@ First for ONT data
 #      echo "minimap2 failed"
 #done
 ```
+for above; 
+-ax map-ont == uses ONT mapping to genome 
 
 Next minimap2 for Illumina paired reads (different syntax)
 
@@ -161,4 +163,34 @@ Next minimap2 for Illumina paired reads (different syntax)
 #    fi
 #done
 ```
+for above;
+-ax sr === mapping using paired reads (illumina)
+both file1/file2 must be paired data (not just two similar files)
 
+#### For both Illumina and ONT data, run the following on the output to convert to binary .BAM file and sort. Additionally, the following command will run samtools flagstat to get overall statistical data on how well mapping occurred.
+
+```
+for file in /example/input/from/minimap2/*.sam
+do
+    fname=$(basename "$file" .sam)
+    bam="/example/output/filepath/bam/${fname}.bam"
+    echo "Converting $file to sorted BAM..."
+    
+    # Add temp directory and memory limit
+    samtools sort -T /example/temporarydirectory/forsorting/tmp/${fname} -m 2G -o "$bam" "$file" || { echo "Sort failed for $file"; continue; }
+    
+    samtools index "$bam"
+    samtools flagstat "$bam"
+    echo "Done with $fname."
+    echo "---------------------------------------------"
+done
+for file in /example/alldata/postfilter/*.bam
+do
+  samtools flagstat
+echo "----------------------------------------------------"
+
+done
+```
+
+After obtaining output files with the flagstat data, as well as from the Flye assembly, you can run the code attached to this directory to pull out statistical data and place into a .xlsx file for further analyses. 
+*THESE TWO FILES MENTIONED ABOVE MUST BE RUN AS PYTHON SCRIPTS* 
