@@ -84,7 +84,7 @@ failed == couldn't read
 
 
 ### rerun FastQC on the fastp/fastplong files for post-filtered QC. 
-same code as prior just change the input/outputs
+*Same code as prior just change the input/outputs*
 
 ### Run MultiQC on both raw and filtered outputs (separate by ONT and Illumina) 
 
@@ -92,6 +92,7 @@ same code as prior just change the input/outputs
 multiqc -n illumina_multiqc -d /example/fastQC/fastp_data/
 multiqc -n nanopore_multiqc -d /example/fastQC/fastplong_data/
 ```
+
 -n == the output files name
 -d == the input directory
 
@@ -112,14 +113,15 @@ do
         --threads 8
 done
 ```
-Options for FLYE include:
+*Options for FLYE include:
 -g == genome size expected (~12.3m for C. glabrata)
 -o == output file
---threads (how many CPU you have listed)
+--threads (how many CPU you have listed)*
 
-### Reference Based Assembly (minimap2) 
+### Reference-Based Assembly (minimap2) 
 
-First for ONT data 
+*First for ONT data*
+
 ```
 #for file in /example/rawdata/*fastq.gz
 #do
