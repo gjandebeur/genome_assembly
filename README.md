@@ -98,8 +98,8 @@ multiqc -n nanopore_multiqc -d /example/fastQC/fastplong_data/
 
 ### The next part branches into two aspects: de novo assembly and reference-based assembly.
 
-## To perform De Novo Assembly of Genome
-use Flye program (install via conda/bioconda)
+## To perform De Novo Assembly of Genome (must be on ONT data)
+*use Flye program (install via conda/bioconda)*
 
 ```
 for file in /example/fastplong/data/*.fastq.gz
