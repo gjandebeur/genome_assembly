@@ -1,7 +1,7 @@
 import re
 import pandas as pd
 
-filepath = "/scratch/gjandebeur/Cglabrata/batch/flye_assembly_26168635_4294967294_debug.txt"
+filepath = "/pathto/flye_assembly_26168635_4294967294_debug.txt" #or wherever the output is with the needed statistics 
 
 # Read the file
 with open(filepath, 'r') as f:
@@ -70,6 +70,6 @@ results.append({
 ###
 df = pd.DataFrame(results)
 
-csv_path = "/scratch/gjandebeur/Cglabrata/reports/flye_assembly_stats.csv"
+csv_path = "/path/to/flye_assembly_stats.csv"
 df.to_csv(csv_path, index=False)
 print(f"Saved {len(df)} samples to {csv_path}")
